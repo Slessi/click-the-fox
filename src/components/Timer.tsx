@@ -1,3 +1,4 @@
+import { addSeconds, differenceInSeconds } from "date-fns";
 import { useEffect, useState } from "react";
 
 interface TimerProps {
@@ -5,17 +6,26 @@ interface TimerProps {
   onTimerExpire(): void;
 }
 
+const TIMER_LENGTH = 30;
+
 export function Timer({ children, onTimerExpire }: TimerProps) {
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(TIMER_LENGTH);
+
+  useEffect(() => {
+    const endTime = addSeconds(new Date(), TIMER_LENGTH);
+
+    const interval = setInterval(
+      () => setTimeLeft(differenceInSeconds(endTime, new Date())),
+      300
+    );
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (timeLeft === 0) {
       onTimerExpire();
       return;
     }
-
-    const timer = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
-    return () => clearTimeout(timer);
   }, [onTimerExpire, timeLeft]);
 
   return children(timeLeft);

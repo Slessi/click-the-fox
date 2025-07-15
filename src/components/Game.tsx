@@ -49,13 +49,14 @@ export function Game({ onTimerExpire }: GameProps) {
         {images?.map((img) => (
           <button
             key={img.url}
-            className="aspect-square max-w-48 bg-gray-100 rounded overflow-hidden shadow hover:scale-125 transition"
+            className="aspect-square cursor-pointer max-w-48 bg-gray-100 rounded overflow-hidden shadow hover:scale-125 transition"
             onClick={() => onClickImg(img)}
           >
             <img
               src={img.url}
               alt="animal"
               className="object-cover size-full"
+              draggable="false"
             />
           </button>
         ))}
