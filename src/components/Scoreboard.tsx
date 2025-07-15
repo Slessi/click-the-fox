@@ -1,19 +1,18 @@
 import { compareAsc, format } from "date-fns";
-import type { Score } from "../App";
+import { getScores } from "../lib/scores";
 
 interface ScoreboardProps {
-  lastScore: Score;
-  allScores: Score[];
   onClickPlayAgain(): void;
   onClickBackToWelcome(): void;
 }
 
 export function Scoreboard({
-  lastScore,
-  allScores,
   onClickPlayAgain,
   onClickBackToWelcome,
 }: ScoreboardProps) {
+  const allScores = getScores();
+  const lastScore = allScores.at(-1);
+
   return (
     <div className="px-2">
       <h2 className="text-2xl text-center font-semibold mb-4 text-orange-700">
@@ -42,9 +41,9 @@ export function Scoreboard({
               <tr
                 key={i}
                 className={
-                  score.name === lastScore.name &&
-                  score.score === lastScore.score &&
-                  score.date === lastScore.date
+                  score.name === lastScore!.name &&
+                  score.score === lastScore!.score &&
+                  score.date === lastScore!.date
                     ? "bg-orange-100"
                     : ""
                 }

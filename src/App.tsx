@@ -1,23 +1,14 @@
-import { parseISO } from "date-fns";
 import { useState } from "react";
 import { Game } from "./components/Game";
 import { Scoreboard } from "./components/Scoreboard";
 import { WelcomeScreen } from "./components/WelcomeScreen";
-
-// TODO: Better location for this?
-export interface Score {
-  name: string;
-  date: Date;
-  score: number;
-}
+import { addScore } from "./lib/scores";
 
 type Page = "WELCOME" | "GAME" | "SCOREBOARD";
 
 function App() {
   const [name, setName] = useState("");
   const [page, setPage] = useState<Page>("WELCOME");
-  const [lastScore, setLastScore] = useState<Score>();
-  const [allScores, setAllScores] = useState<Score[]>([]);
 
   return (
     <main className="flex flex-col justify-center h-screen w-screen bg-orange-50">
@@ -34,36 +25,18 @@ function App() {
         />
       ) : page === "SCOREBOARD" ? (
         <Scoreboard
-          lastScore={lastScore!}
-          allScores={allScores}
           onClickPlayAgain={() => {
-            setLastScore(undefined);
             setPage("GAME");
           }}
           onClickBackToWelcome={() => {
             setName("");
-            setLastScore(undefined);
             setPage("WELCOME");
           }}
         />
       ) : page === "GAME" ? (
         <Game
           onTimerExpire={(score) => {
-            const newScore = { name, date: new Date(), score };
-
-            // TODO: Simplify local storage work
-            const oldScores = (
-              JSON.parse(localStorage.getItem("fox-scores") || "[]") as (Omit<
-                Score,
-                "date"
-              > & { date: string })[]
-            ).map((s) => ({ ...s, date: parseISO(s.date) }));
-
-            const updatedScores = [...oldScores, newScore];
-            localStorage.setItem("fox-scores", JSON.stringify(updatedScores));
-
-            setAllScores(updatedScores);
-            setLastScore(newScore);
+            addScore({ name, date: new Date(), score });
             setPage("SCOREBOARD");
           }}
         />
