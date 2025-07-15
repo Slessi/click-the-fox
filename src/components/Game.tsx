@@ -1,30 +1,21 @@
-import { useEffect, useState } from "react";
-import { loadImages } from "../lib/api";
+import { useEffect, useRef, useState } from "react";
+import { getImages, type Image } from "../lib/api";
 
 interface GameProps {
   onTimerExpire(score: number): void;
 }
 
 export function Game({ onTimerExpire }: GameProps) {
-  const [images, setImages] = useState<{ url: string; isFox: boolean }[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [images, setImages] = useState<Image[]>();
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(30);
+  const clickThrottle = useRef(false);
 
-  // TODO: Improve performance, preload API calls and images as needed, remove all loading states
-  async function loadGridImages() {
-    setLoading(true);
-
-    try {
-      const grid = await loadImages();
-      setImages(grid);
-    } finally {
-      setLoading(false);
-    }
-  }
-
+  // Load first images
   useEffect(() => {
-    loadGridImages();
+    (async function () {
+      setImages(await getImages());
+    })();
   }, []);
 
   useEffect(() => {
@@ -39,6 +30,16 @@ export function Game({ onTimerExpire }: GameProps) {
     return () => clearTimeout(timer);
   }, [score, timeLeft]);
 
+  async function onClickImg(img: Image) {
+    // Throttled between pages
+    if (clickThrottle.current) return;
+
+    clickThrottle.current = true;
+    setScore((s) => s + (img.isFox ? 1 : -1));
+    setImages(await getImages());
+    clickThrottle.current = false;
+  }
+
   return (
     <>
       <div className="flex gap-8 mb-4">
@@ -52,18 +53,11 @@ export function Game({ onTimerExpire }: GameProps) {
       </div>
 
       <div className="grid grid-cols-3 gap-4">
-        {images.map((img, i) => (
+        {images?.map((img) => (
           <button
-            key={i}
+            key={img.url}
             className="size-24 bg-gray-100 rounded overflow-hidden shadow hover:scale-125 transition"
-            onClick={async () => {
-              if (loading) return;
-
-              setScore((s) => s + (img.isFox ? 1 : -1));
-
-              await loadGridImages();
-            }}
-            disabled={loading}
+            onClick={() => onClickImg(img)}
           >
             <img
               src={img.url}

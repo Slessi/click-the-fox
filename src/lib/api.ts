@@ -23,11 +23,41 @@ function shuffle<T>(array: T[]): T[] {
   return array;
 }
 
-export async function loadImages() {
+export interface Image {
+  url: string;
+  isFox: boolean;
+}
+
+async function loadImages(): Promise<Image[]> {
   const [fox, cats] = await Promise.all([fetchFox(), fetchCats()]);
+
+  preloadImages([fox, ...cats]);
 
   return shuffle([
     { url: fox, isFox: true },
     ...cats.map((url) => ({ url, isFox: false })),
   ]);
 }
+
+function preloadImages(urls: string[]) {
+  urls.forEach((url) => {
+    const img = new window.Image();
+    img.src = url;
+  });
+}
+
+export async function getImages() {
+  // Start a background operation to load another image set into the cache
+  loadImages().then((images) => imageCache.push(images));
+
+  // Fallback incase we are burning through the cache before it is ready
+  if (!imageCache.length) {
+    return await loadImages();
+  }
+
+  // Pop the next set of images
+  return imageCache.pop();
+}
+
+// Cache up to 3 pages in advance
+const imageCache = [await loadImages(), await loadImages(), await loadImages()];
