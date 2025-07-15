@@ -2,17 +2,15 @@ import { compareAsc, format } from "date-fns";
 import type { Score } from "../App";
 
 interface ScoreboardProps {
-  name: string;
-  score: number;
-  scores: Score[];
+  lastScore: Score;
+  allScores: Score[];
   onClickPlayAgain(): void;
   onClickBackToWelcome(): void;
 }
 
 export function Scoreboard({
-  name,
-  score,
-  scores,
+  lastScore,
+  allScores,
   onClickPlayAgain,
   onClickBackToWelcome,
 }: ScoreboardProps) {
@@ -33,29 +31,30 @@ export function Scoreboard({
         </thead>
 
         <tbody>
-          {[...scores]
+          {[...allScores]
             // Sort by score then date
             .sort((a, b) =>
               b.score === a.score
                 ? compareAsc(a.date, b.date)
                 : b.score - a.score
             )
-            .map((row, i) => (
+            .map((score, i) => (
               <tr
                 key={i}
                 className={
-                  // TODO: Better current score detection (id? apply to key also?)
-                  row.name === name && row.score === score
+                  score.name === lastScore.name &&
+                  score.score === lastScore.score &&
+                  score.date === lastScore.date
                     ? "bg-orange-100"
                     : ""
                 }
               >
                 <td className="bg-orange-200 px-4 py-2 text-center">{i + 1}</td>
-                <td className="px-4 py-2">{row.name}</td>
+                <td className="px-4 py-2">{score.name}</td>
                 <td className="px-4 py-2 text-center">
-                  {format(row.date, "yyyy, MMM d")}
+                  {format(score.date, "yyyy, MMM d")}
                 </td>
-                <td className="px-4 py-2 text-end">{row.score}</td>
+                <td className="px-4 py-2 text-end">{score.score}</td>
               </tr>
             ))}
         </tbody>

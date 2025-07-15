@@ -1,5 +1,5 @@
 import { parseISO } from "date-fns";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Game } from "./components/Game";
 import { Scoreboard } from "./components/Scoreboard";
 import { WelcomeScreen } from "./components/WelcomeScreen";
@@ -11,38 +11,13 @@ export interface Score {
   score: number;
 }
 
+type Page = "WELCOME" | "GAME" | "SCOREBOARD";
+
 function App() {
   const [name, setName] = useState("");
-  const [score, setScore] = useState(0);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  const [showScoreboard, setShowScoreboard] = useState(false);
-  const [scores, setScores] = useState<Score[]>([]);
-
-  useEffect(() => {
-    if (!gameOver) return;
-
-    // TODO: Simplify local storage work
-    const prev = JSON.parse(
-      localStorage.getItem("fox-scores") || "[]"
-    ) as (Omit<Score, "date"> & { date: string })[];
-
-    const updated = [
-      ...prev.map((s) => ({ ...s, date: parseISO(s.date) })),
-      { name, date: new Date(), score },
-    ];
-
-    localStorage.setItem("fox-scores", JSON.stringify(updated));
-    setScores(updated);
-    setShowScoreboard(true);
-  }, [gameOver]);
-
-  useEffect(() => {
-    if (showScoreboard) {
-      const prev = JSON.parse(localStorage.getItem("fox-scores") || "[]");
-      setScores(prev);
-    }
-  }, [showScoreboard]);
+  const [page, setPage] = useState<Page>("WELCOME");
+  const [lastScore, setLastScore] = useState<Score>();
+  const [allScores, setAllScores] = useState<Score[]>([]);
 
   return (
     <main className="flex flex-col items-center justify-center h-screen w-screen bg-orange-50">
@@ -50,38 +25,49 @@ function App() {
         Click the Fox! Game
       </h1>
 
-      {!gameStarted ? (
+      {page === "WELCOME" ? (
         <WelcomeScreen
           onClickPlay={(name: string) => {
             setName(name);
-            setGameOver(false);
-            setGameStarted(true);
+            setPage("GAME");
           }}
         />
-      ) : gameOver && showScoreboard ? (
+      ) : page === "SCOREBOARD" ? (
         <Scoreboard
-          name={name}
-          score={score}
-          scores={scores}
+          lastScore={lastScore!}
+          allScores={allScores}
           onClickPlayAgain={() => {
-            setShowScoreboard(false);
-            setGameOver(false);
-            setGameStarted(true);
+            setLastScore(undefined);
+            setPage("GAME");
           }}
           onClickBackToWelcome={() => {
-            setShowScoreboard(false);
-            setGameOver(false);
-            setGameStarted(false);
+            setName("");
+            setLastScore(undefined);
+            setPage("WELCOME");
           }}
         />
-      ) : (
+      ) : page === "GAME" ? (
         <Game
           onTimerExpire={(score) => {
-            setScore(score);
-            setGameOver(true);
+            const newScore = { name, date: new Date(), score };
+
+            // TODO: Simplify local storage work
+            const oldScores = (
+              JSON.parse(localStorage.getItem("fox-scores") || "[]") as (Omit<
+                Score,
+                "date"
+              > & { date: string })[]
+            ).map((s) => ({ ...s, date: parseISO(s.date) }));
+
+            const updatedScores = [...oldScores, newScore];
+            localStorage.setItem("fox-scores", JSON.stringify(updatedScores));
+
+            setAllScores(updatedScores);
+            setLastScore(newScore);
+            setPage("SCOREBOARD");
           }}
         />
-      )}
+      ) : null}
     </main>
   );
 }
