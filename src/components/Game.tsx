@@ -41,8 +41,8 @@ export function Game({ onTimerExpire }: GameProps) {
   }
 
   return (
-    <>
-      <div className="flex gap-8 mb-4">
+    <div className="flex flex-col items-center gap-4">
+      <div className="flex text-center gap-8">
         <div className="text-lg">
           Score: <span className="font-bold">{score}</span>
         </div>
@@ -52,21 +52,21 @@ export function Game({ onTimerExpire }: GameProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 px-4 sm:px-8">
         {images?.map((img) => (
           <button
             key={img.url}
-            className="size-24 bg-gray-100 rounded overflow-hidden shadow hover:scale-125 transition"
+            className="aspect-square max-w-48 bg-gray-100 rounded overflow-hidden shadow hover:scale-125 transition"
             onClick={() => onClickImg(img)}
           >
             <img
               src={img.url}
               alt="animal"
-              className="object-cover w-full h-full"
+              className="object-cover size-full"
             />
           </button>
         ))}
       </div>
-    </>
+    </div>
   );
 }

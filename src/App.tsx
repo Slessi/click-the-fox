@@ -20,8 +20,8 @@ function App() {
   const [allScores, setAllScores] = useState<Score[]>([]);
 
   return (
-    <main className="flex flex-col items-center justify-center h-screen w-screen bg-orange-50">
-      <h1 className="text-4xl mb-6 font-bold text-orange-700">
+    <main className="flex flex-col justify-center h-screen w-screen bg-orange-50">
+      <h1 className="text-4xl text-center mb-6 font-bold text-orange-700">
         Click the Fox! Game
       </h1>
 
