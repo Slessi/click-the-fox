@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getImages, type Image } from "../lib/api";
+import { Timer } from "./Timer";
 
 interface GameProps {
   onTimerExpire(score: number): void;
@@ -8,7 +9,6 @@ interface GameProps {
 export function Game({ onTimerExpire }: GameProps) {
   const [images, setImages] = useState<Image[]>();
   const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(30);
   const clickThrottle = useRef(false);
 
   // Load first images
@@ -17,18 +17,6 @@ export function Game({ onTimerExpire }: GameProps) {
       setImages(await getImages());
     })();
   }, []);
-
-  useEffect(() => {
-    if (timeLeft === 0) {
-      onTimerExpire(score);
-      return;
-    }
-
-    // TODO: Use react-timer ?
-    // TODO: Use 'date' instead of -1? Also move timer down to minimise rerender cost?
-    const timer = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
-    return () => clearTimeout(timer);
-  }, [score, timeLeft]);
 
   async function onClickImg(img: Image) {
     // Throttled between pages
@@ -48,7 +36,12 @@ export function Game({ onTimerExpire }: GameProps) {
         </div>
 
         <div className="text-lg">
-          Time left: <span className="font-bold">{timeLeft}</span>s
+          Time left:{" "}
+          <span className="font-bold">
+            <Timer onTimerExpire={() => onTimerExpire(score)}>
+              {(timeLeft) => timeLeft}
+            </Timer>
+          </span>
         </div>
       </div>
 
