@@ -14,52 +14,56 @@ export function Scoreboard({
   const lastScore = allScores.at(-1);
 
   return (
-    <div className="px-2">
-      <h2 className="text-2xl text-center font-semibold mb-4 text-orange-700">
+    <div className="flex flex-col justify-center items-center gap-4 h-full">
+      <h2 className="text-2xl shrink-0 text-center font-semibold text-orange-700">
         SCOREBOARD
       </h2>
 
-      <table className="min-w-[320px] bg-white rounded shadow mb-6">
-        <thead>
-          <tr className="bg-orange-200">
-            <th className="px-4 py-2">Rank</th>
-            <th className="px-4 py-2">Name</th>
-            <th className="px-4 py-2">Date</th>
-            <th className="px-4 py-2">Score</th>
-          </tr>
-        </thead>
+      <div className="grow max-h-64 sm:max-h-2/3 overflow-auto">
+        <table className="bg-white rounded shadow text-xs sm:text-base">
+          <thead>
+            <tr className="bg-orange-200">
+              <th className="px-4 py-2">Rank</th>
+              <th className="px-4 py-2">Name</th>
+              <th className="px-4 py-2">Date</th>
+              <th className="px-4 py-2">Score</th>
+            </tr>
+          </thead>
 
-        <tbody>
-          {[...allScores]
-            // Sort by score then date
-            .sort((a, b) =>
-              b.score === a.score
-                ? compareAsc(a.date, b.date)
-                : b.score - a.score
-            )
-            .map((score, i) => (
-              <tr
-                key={i}
-                className={
-                  score.name === lastScore!.name &&
-                  score.score === lastScore!.score &&
-                  score.date === lastScore!.date
-                    ? "bg-orange-100"
-                    : ""
-                }
-              >
-                <td className="bg-orange-200 px-4 py-2 text-center">{i + 1}</td>
-                <td className="px-4 py-2">{score.name}</td>
-                <td className="px-4 py-2 text-center">
-                  {format(score.date, "yyyy, MMM d")}
-                </td>
-                <td className="px-4 py-2 text-end">{score.score}</td>
-              </tr>
-            ))}
-        </tbody>
-      </table>
+          <tbody className="overflow-auto">
+            {[...allScores]
+              // Sort by score then date
+              .sort((a, b) =>
+                b.score === a.score
+                  ? compareAsc(a.date, b.date)
+                  : b.score - a.score
+              )
+              .map((score, i) => (
+                <tr
+                  key={i}
+                  className={
+                    score.name === lastScore!.name &&
+                    score.score === lastScore!.score &&
+                    score.date === lastScore!.date
+                      ? "bg-orange-100"
+                      : ""
+                  }
+                >
+                  <td className="bg-orange-200 px-4 py-2 text-center">
+                    {i + 1}
+                  </td>
+                  <td className="px-4 py-2">{score.name}</td>
+                  <td className="px-4 py-2 text-center">
+                    {format(score.date, "yyyy, MMM d")}
+                  </td>
+                  <td className="px-4 py-2 text-end">{score.score}</td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
 
-      <div className="flex gap-4">
+      <div className="flex gap-4 shrink-0">
         <button
           className="px-6 py-2 bg-gray-300 text-gray-700 rounded shadow hover:bg-gray-400 transition"
           onClick={onClickBackToWelcome}

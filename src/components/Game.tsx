@@ -52,7 +52,7 @@ export function Game({ onTimerExpire }: GameProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-4 px-4 sm:px-8">
+      <div className="grid grid-cols-3 gap-4">
         {images?.map((img) => (
           <button
             key={img.url}
