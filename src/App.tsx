@@ -11,12 +11,12 @@ function App() {
   const [page, setPage] = useState<Page>("WELCOME");
 
   return (
-    <main className="flex flex-col justify-center h-screen w-screen bg-orange-50 py-2 px-4 sm:px-8">
+    <main className="flex flex-col items-center justify-center h-screen w-screen bg-orange-50 py-2 px-4 sm:px-8">
       <h1 className="shrink-0 text-4xl text-center mb-6 font-bold text-orange-700">
         Click the Fox! Game
       </h1>
 
-      <section className="flex-1">
+      <section>
         {page === "WELCOME" ? (
           <WelcomeScreen
             onClickPlay={(name: string) => {

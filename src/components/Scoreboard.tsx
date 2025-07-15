@@ -19,7 +19,7 @@ export function Scoreboard({
         SCOREBOARD
       </h2>
 
-      <div className="grow max-h-64 sm:max-h-2/3 overflow-auto">
+      <div className="grow max-h-64 overflow-auto">
         <table className="bg-white rounded shadow text-xs sm:text-base">
           <thead>
             <tr className="bg-orange-200">
