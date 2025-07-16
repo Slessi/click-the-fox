@@ -5,11 +5,13 @@ export const handlers = [
     HttpResponse.json({ image: "https://randomfox.ca/images/108.jpg" })
   ),
 
-  http.get("https://api.thecatapi.com/v1/images/search?limit=8", () =>
+  http.get("https://api.thecatapi.com/v1/images/search", () =>
     HttpResponse.json(
       Array(10)
         .fill(null)
-        .map(() => ({ url: "https://cdn2.thecatapi.com/images/17q.jpg" }))
+        .map((_, i) => ({
+          url: `https://cdn2.thecatapi.com/images/17q.jpg?${i}`,
+        }))
     )
   ),
 ];

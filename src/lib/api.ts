@@ -59,5 +59,15 @@ export async function getImages() {
   return imageCache.pop();
 }
 
-// Cache up to 3 pages in advance
-const imageCache = [await loadImages(), await loadImages(), await loadImages()];
+// Cache some image pages in advance
+export async function populateImageCache(pageCount: number) {
+  await Promise.all(
+    Array(pageCount)
+      .fill(null)
+      .map(async () => {
+        imageCache.push(await loadImages());
+      })
+  );
+}
+
+const imageCache: Image[][] = [];

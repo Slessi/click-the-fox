@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Game } from "./components/Game";
 import { Scoreboard } from "./components/Scoreboard";
 import { WelcomeScreen } from "./components/WelcomeScreen";
+import { populateImageCache } from "./lib/api";
 import { addScore } from "./lib/scores";
 
 type Page = "WELCOME" | "GAME" | "SCOREBOARD";
@@ -9,6 +10,10 @@ type Page = "WELCOME" | "GAME" | "SCOREBOARD";
 function App() {
   const [name, setName] = useState("");
   const [page, setPage] = useState<Page>("WELCOME");
+
+  useEffect(() => {
+    populateImageCache(3);
+  }, []);
 
   return (
     <main className="flex flex-col items-center justify-center h-screen w-screen bg-orange-50 py-2 px-4 sm:px-8">
