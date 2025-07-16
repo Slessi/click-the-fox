@@ -31,11 +31,11 @@ export function Game({ onTimerExpire }: GameProps) {
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="flex text-center gap-8">
-        <div className="text-lg">
+        <div className="text-lg" aria-label="score">
           Score: <span className="font-bold">{score}</span>
         </div>
 
-        <div className="text-lg">
+        <div className="text-lg" aria-label="timer">
           Time left:{" "}
           <span className="font-bold">
             <Timer onTimerExpire={() => onTimerExpire(score)}>
